@@ -2,11 +2,11 @@
 
 module Cukewrapper
   # I process data >:^)
-  class InlineJSONPathRemapper < Cukewrapper::Remapper
+  class InlineJSONPathRemapper < Remapper
     priority :low
 
-    def initialize(config)
-      super(config)
+    def initialize
+      super
       @inline_remaps = []
     end
 
@@ -15,7 +15,7 @@ module Cukewrapper
     end
 
     def register_hooks
-      Cukewrapper::Hooks.register("#{self.class.name}:after_datatables", :after_datatables) do |_context, datatables|
+      Hooks.register("#{self.class.name}:after_datatables", :after_datatables) do |_context, datatables|
         handle_datatables(datatables)
       end
     end

@@ -13,9 +13,10 @@ Gem::Specification.new do |spec|
   spec.homepage = 'https://github.com/nickblantz'
   spec.license = 'MIT'
   spec.required_ruby_version = Gem::Requirement.new('>= 2.6.0')
-  spec.files = [
-    'lib/cukewrapper_inline_jsonpath.rb',
-    'lib/cukewrapper/cukewrapper_inline_jsonpath.rb'
+  spec.files = Dir[
+    'lib/**/*',
+    'README.md',
+    'LICENSE'
   ]
   spec.add_development_dependency 'rubocop', '~> 1.0'
   spec.add_dependency 'cukewrapper', '~> 0.0'
