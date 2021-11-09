@@ -3,6 +3,9 @@
 module Cukewrapper
   # I process data >:^)
   class InlineJSONPathRemapper < Remapper
+    require 'faker'
+    require 'jsonpath'
+
     priority :low
 
     def initialize
@@ -16,13 +19,14 @@ module Cukewrapper
 
     def register_hooks
       Hooks.register("#{self.class.name}:after_datatables", :after_datatables) do |_context, datatables|
-        handle_datatables(datatables)
+        add_remaps(datatables)
       end
     end
 
-    def handle_datatables(datatables)
-      Cukewrapper.log.debug("#{self.class.name}\##{__method__}") { 'Adding datatables' }
+    def add_remaps(datatables)
       datatables.each do |datatable|
+        remap = datatable[1..].map { |arr| { path: arr[0], value: arr[1] } }
+        LOGGER.debug("#{self.class.name}\##{__method__}") { remap }
         @inline_remaps += datatable[1..].map { |arr| { path: arr[0], value: arr[1] } }
       end
     end
@@ -31,8 +35,8 @@ module Cukewrapper
 
     def remap!(data)
       @inline_remaps.each do |remap|
-        Cukewrapper.log.debug("#{self.class.name}\##{__method__}") do
-          "Remapping '#{remap[:path]}' to '#{remap[:value]}'"
+        LOGGER.debug("#{self.class.name}\##{__method__}") do
+          "#{remap[:path].inspect} => #{remap[:value].inspect}"
         end
         JsonPath
           .for(data)
@@ -52,7 +56,7 @@ module Cukewrapper
     end
 
     def merge(value, raw)
-      Cukewrapper.log.debug("#{self.class.name}\##{__method__}") { "Merging value '#{raw}'" }
+      LOGGER.debug("#{self.class.name}\##{__method__}") { raw }
       parsed = evaluate_or_parse(raw)
       merge_result(value, parsed)
     end
@@ -81,16 +85,16 @@ module Cukewrapper
     end
 
     def evaluate(raw)
-      Cukewrapper.log.debug("#{self.class.name}\##{__method__}") { "Evaluating '#{raw}'" }
+      LOGGER.debug("#{self.class.name}\##{__method__}") { raw }
       # rubocop:disable Security/Eval
       eval raw
       # rubocop:enable Security/Eval
     end
 
     def parse(raw)
-      Cukewrapper.log.debug("#{self.class.name}\##{__method__}") { "Parsing '#{raw}'" }
       return nil if raw == ''
 
+      LOGGER.debug("#{self.class.name}\##{__method__}") { raw }
       JSON.parse(raw)
     end
   end

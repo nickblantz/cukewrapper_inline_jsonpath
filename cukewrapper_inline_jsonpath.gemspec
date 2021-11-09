@@ -21,6 +21,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rubocop', '~> 1.0'
   spec.add_dependency 'cukewrapper', '~> 0.0'
   spec.add_runtime_dependency 'faker', '~> 2.0'
-  spec.add_runtime_dependency 'json', '~> 2.0'
   spec.add_runtime_dependency 'jsonpath', '~> 1.0'
 end
