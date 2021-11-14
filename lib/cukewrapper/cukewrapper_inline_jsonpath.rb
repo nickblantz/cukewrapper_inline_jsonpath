@@ -3,41 +3,47 @@
 module Cukewrapper
   # I process data >:^)
   class InlineJSONPathRemapper < Remapper
+    require 'date'
     require 'faker'
     require 'jsonpath'
 
+    DATATABLE_HEADER = %w[JSONPath Value].freeze
+
     priority :low
 
-    def initialize
-      super
-      @inline_remaps = []
-    end
-
     def run(context)
+      return unless @enabled
+
+      context['data'] ||= {}
       remap!(context['data'])
     end
 
     def register_hooks
-      Hooks.register("#{self.class.name}:after_datatables", :after_datatables) do |_context, datatables|
-        add_remaps(datatables)
-      end
+      Hooks.register("#{self.class.name}:enable", :after_datatables, &enable)
     end
 
-    def add_remaps(datatables)
-      datatables.each do |datatable|
-        remap = datatable[1..].map { |arr| { path: arr[0], value: arr[1] } }
-        LOGGER.debug("#{self.class.name}\##{__method__}") { remap }
-        @inline_remaps += datatable[1..].map { |arr| { path: arr[0], value: arr[1] } }
+    def enable
+      lambda do |_context, datatables|
+        @remaps = datatables.flat_map(&to_remaps)
+        @enabled = !@remaps.empty?
+        LOGGER.debug("#{self.class.name}\##{__method__}") { @enabled }
       end
     end
 
     private
 
+    def to_remaps
+      lambda do |table|
+        return [] unless table[0] == DATATABLE_HEADER
+
+        table[1..].map { |arr| { path: arr[0], value: arr[1] } }
+      end
+    end
+
     def remap!(data)
-      @inline_remaps.each do |remap|
-        LOGGER.debug("#{self.class.name}\##{__method__}") do
-          "#{remap[:path].inspect} => #{remap[:value].inspect}"
-        end
+      @remaps.each do |remap|
+        JsonPath.for(data).delete!(remap[:path]) if remap[:value] == ''
+
         JsonPath
           .for(data)
           .gsub!(remap[:path], &value_remapper(remap[:value]))

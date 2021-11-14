@@ -17,11 +17,10 @@ end
 
 ## Usage
 
-Add a Datatable to your scenario where the first column is a valid JSONPath and
-the second column is a valid expression
+Add a Datatable to your scenario where the headers are `JSONPath` and `Value`. 
 
 ```gherkin
-Scenario: My Scenario
+Scenario: My scenario
     Given ...
         | JSONPath                           | Value              |
         # Each item's price                  # Overriding a value #
@@ -31,6 +30,13 @@ Scenario: My Scenario
         # Each item named Tito's kind        # Does nothing       #
         | $.items[?(@.name == 'Lays')].kind  | ~"Chips"           |
 ```
+
+### Values
+
+Values have two basic forms: as valid JSON, or as valid ruby prefixxed with `#`.
+Values can also be merged into the existing value by prefixxing with `~`. 
+Merging only applies for Dictionaries and Lists, or if provided by itself, no
+action is taken upon the existing value.
 
 ## Development
 

@@ -1,3 +1,6 @@
 # frozen_string_literal: true
 
-require 'cukewrapper/cukewrapper_inline_jsonpath'
+# Internals for inline JSONPath remapping
+module CukewrapperInlineJsonpath
+  require 'cukewrapper/cukewrapper_inline_jsonpath'
+end
