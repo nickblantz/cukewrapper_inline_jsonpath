@@ -33,8 +33,8 @@ Scenario: My scenario
 
 ### Values
 
-Values have two basic forms: as valid JSON, or as valid ruby prefixxed with `#`.
-Values can also be merged into the existing value by prefixxing with `~`. 
+Values have two basic forms: as valid JSON, or as valid ruby prefixed with `#`.
+Values can also be merged into the existing value by prefixing with `~`. 
 Merging only applies for Dictionaries and Lists, or if provided by itself, no
 action is taken upon the existing value.
 
